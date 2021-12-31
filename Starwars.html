@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Open+Sans:300,400,600,700&amp;lang=en" />
+    <title>Starwars</title>
+    <style>
+     
+     *
+     {
+         text-align: center;
+         margin: auto;
+         margin-top: 2%;
+         font-family: 'Open Sans', sans-serif;
+         color: white;
+     }
+             
+        input 
+    {
+      width: 200px;
+      color: white;
+      height: 40px;
+      width: 35%;
+      font-size: 22px;
+      background-color: #2D2F30;
+      border-radius: 7px;
+    }
+
+    #movies {
+      height: 200px;
+      width: 206px;
+      border-top: none;
+    
+    }
+
+    body
+    {
+        background-color: rgb(0, 0, 0);
+    }
+    img
+    {
+        height: 200px;
+        width: 500px;
+    }
+    p
+    {
+        font-size: 20px;
+        font-weight: 500;
+        width: 35%;
+        font-size: 22px;
+        background-color: #2D2F30;
+        border-radius: 10px;
+    }
+    p:hover
+    {
+        cursor:pointer;
+        color: rgb(231, 228, 14);
+    }
+
+    .main
+    {
+        width: 80%;
+    }
+    .display
+    {
+        color: red;
+        font-size:  20px;
+    }
+
+    button
+    {
+        font-size: 20px;
+        background-color: gray;
+    }
+    </style>
+</head>
+
+<body>
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Star_Wars_Logo.svg/1024px-Star_Wars_Logo.svg.png" alt="">
+    <br>
+    
+    <div class="main" id="main">
+    <input type="text" placeholder="Enter character" oninput="debounce(main,500)" id="query" />
+    <div id="namesss"></div>
+    </div>
+    
+    <script>
+       var timerId;
+       let namess=document.getElementById("namesss")
+       var data;
+       async function searchMovies(n)
+       {
+        let res=await fetch(`https://swapi.dev/api/people/?search=${n}&max-results=6`);
+        data=await res.json()
+        var output=await data.results
+        return output;       
+       }
+          
+   function appendMovies(m)
+       {
+             namess.innerHTML=null;
+              m.forEach(({name})=> 
+           {
+              let p =document.createElement("p");
+              p.innerText=name;
+              namess.append(p) 
+              p.addEventListener("click", function() {display(name)})
+           });
+       }
+    
+       async function main()
+        {
+               let name=document.getElementById("query").value
+               if(name.length===0)
+               {
+                   let mynode =document.getElementById("namesss")
+                     while (mynode.firstChild) 
+                     {
+                        mynode.removeChild(mynode.firstChild);
+                     } 
+               }
+               else
+               {
+               let names = await searchMovies(name);
+               if(names===undefined)
+               {
+                   return false;
+               }
+               appendMovies(names)
+            }
+        }
+
+
+        function debounce(func, delay)
+        {
+            let name=document.getElementById("query").value
+            if(timerId)
+            {
+                clearTimeout(timerId)
+            }
+
+            timerId=setTimeout(() => {
+                func();
+            }, delay);
+        }
+
+        function display(p)
+        {
+            console.log(data.results)
+            let mynode =document.getElementById("namesss")
+            let q= document.getElementById("main")
+            document.body.removeChild(q)
+          
+            let newClass =document.createElement("h1");
+            newClass.innerHTML="Details of "+p;
+            document.body.appendChild(newClass)
+             for(var i=0;i<6;i++)
+             {
+                 if(p===data.results[i].name)
+                 {
+                    let height= document.createElement("p")
+                    height.innerText="Height : "+data.results[i].height;
+                    document.body.appendChild(height)
+
+                    let hair=document.createElement("p")
+                    hair.innerHTML="Hair Color : "+data.results[i].hair_color;
+                    console.log(hair)
+                    newClass.appendChild(hair)
+
+                    let skin=document.createElement("p")
+                    skin.innerHTML="Skin Color : " +data.results[i].skin_color;
+                     newClass.appendChild(skin)
+                     
+                    let mass=document.createElement("p")
+                    mass.innerHTML="Mass : "+data.results[i].mass;
+                    newClass.appendChild(mass)
+
+                    break;
+                 }
+             }
+             
+             let button =document.createElement("button");
+            button.innerHTML="Go back";
+            document.body.appendChild(button)
+            button.addEventListener("click",reload);
+        }
+
+        function reload()
+        {
+            location.reload()
+        }
+    
+    </script>
+</body>
+</html>
